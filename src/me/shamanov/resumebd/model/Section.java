@@ -9,6 +9,6 @@ import java.io.Serializable;
  * This class is used to represent an abstraction of each {@code Section} within {@code Resume} instance.
  */
 
-abstract class Section implements Serializable {
+public abstract class Section implements Serializable {
 
 }

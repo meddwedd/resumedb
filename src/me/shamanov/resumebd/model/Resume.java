@@ -1,5 +1,8 @@
 package me.shamanov.resumebd.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
@@ -15,7 +18,8 @@ import java.util.UUID;
  * e.g. database, filesystem etc.
  */
 
-public final class Resume implements Serializable {
+
+public final class Resume implements Comparable<Resume>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String id;
@@ -65,6 +69,31 @@ public final class Resume implements Serializable {
         return UUID.randomUUID().toString();
     }
 
+    /**
+     * Indicates whether other Resume object is "equal to" this one using all the fields used to describe a concrete person.
+     * @param o the reference object with which to compare.
+     * @return true if equals and false if not.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Resume resume = (Resume) o;
+        return  Objects.equals(id, resume.id) &&
+                Objects.equals(fullName, resume.fullName) &&
+                Objects.equals(location, resume.location) &&
+                Objects.equals(homepage, resume.homepage) &&
+                Objects.equals(contacts, resume.contacts) &&
+                Objects.equals(sections, resume.sections);
+    }
+
+    /**
+     * @return hashcode upon unique id which is randomly generated on instantiation
+     */
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
     /**
      * @return unique id for this concrete {@code Resume} instance.
@@ -147,5 +176,24 @@ public final class Resume implements Serializable {
      */
     public Section addSection(SectionType sectionType, Section section) {
         return sections.put(sectionType, section);
+    }
+
+    private void writeObject(ObjectOutputStream os) throws IOException {
+        os.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream os) throws IOException, ClassNotFoundException {
+        os.defaultReadObject();
+    }
+
+    /**
+     * Compares two Resume objects by person's full name of each, and if they equal it compares their unique IDs.
+     * @param o the reference object with which to compare.
+     * @return 0 if fullName.compareTo(o.fullName) returns 0, -1 or 1 if id.compareTo(o.id) returns any (in theory, it may return 0 as well).
+     */
+    @Override
+    public int compareTo(Resume o) {
+        int result = fullName.compareTo(o.fullName);
+        return result == 0 ? id.compareTo(o.id) : result;
     }
 }
