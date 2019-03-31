@@ -25,6 +25,12 @@ import java.util.Map;
 
 public class XMLFileStorage extends AbstractFileStorage {
 
+    /**
+     * Helping class to initialize JAXB context and do marshalling and unmarshalling of specified class.
+     * In this case - {@link XMLResume}.
+     *
+     * @see XMLResume
+     */
     private static class XMLUtil {
         private static JAXBContext context;
         private static Marshaller marshaller;
@@ -36,7 +42,6 @@ public class XMLFileStorage extends AbstractFileStorage {
                 marshaller = context.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
                 marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-//            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
                 unmarshaller = context.createUnmarshaller();
             } catch (JAXBException e) {
                 throw new RuntimeException("JAXBContext couldn't be instantiated!", e);
@@ -52,6 +57,14 @@ public class XMLFileStorage extends AbstractFileStorage {
         }
     }
 
+    /**
+     * This class is intended to be a mockery for {@link Resume} class so that the real class would have no public constructors
+     * as it is needed for JAXB library and there would be no direct access to the final id field of {@link Resume} class.
+     * It has only one method {@link XMLResume#asResume()} which returns an instance of {@link Resume} upon the loaded fields from
+     * XML file.
+     *
+     * @see XMLUtil
+     */
     @XmlRootElement(name = "resume")
     @XmlAccessorType(XmlAccessType.FIELD)
     private static class XMLResume {
