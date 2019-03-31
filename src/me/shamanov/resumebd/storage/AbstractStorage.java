@@ -38,49 +38,48 @@ public abstract class AbstractStorage<T> implements Storage {
     public abstract List<Resume> getSortedResumeList();
 
     @Override
-    public void update(Resume resume) {
+    final public void update(Resume resume) {
         Objects.requireNonNull(resume);
         T key = searchKey(resume.getId());
-        errorIfNotContains(key, () -> "Resume doesn't exist in the storage!");
+        if (!contains(key)) {
+            error(() -> "Resume doesn't exist in the storage!", null);
+        }
         doUpdate(resume, key);
     }
 
     @Override
-    public void save(Resume resume) {
+    final public void save(Resume resume) {
         Objects.requireNonNull(resume);
         T key = searchKey(resume.getId());
-        errorIfContains(key, () -> "Resume already exists in the storage! Use update instead!");
+        if (contains(key)) {
+            error(() -> "Resume already exists in the storage! Use update instead!", null);
+        }
         doSave(resume, key);
     }
 
     @Override
-    public Resume load(String id) {
+    final public Resume load(String id) {
         Objects.requireNonNull(id);
         T key = searchKey(id);
-        errorIfNotContains(key, () -> "Resume doesn't exist in the storage!");
+        if (!contains(key)) {
+            error(() -> "Resume doesn't exist in the storage!", null);
+        }
         return doLoad(key);
     }
 
-    private void errorIfNotContains(T key, Supplier<String> supplier) {
-        if (!contains(key)) {
-            logger.severe(supplier);
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private void errorIfContains(T key, Supplier<String> supplier) {
-        if (contains(key)) {
-            logger.severe(supplier);
-            throw new IllegalArgumentException();
-        }
-    }
 
     @Override
-    public void delete(String id) {
+    final public void delete(String id) {
         Objects.requireNonNull(id);
         T key = searchKey(id);
-        errorIfNotContains(key, () -> "Resume doesn't exist in the storage!");
+        if (!contains(key)) {
+            error(() -> "Resume doesn't exist in the storage!", null);
+        }
         doDelete(key);
     }
 
+    protected void error(Supplier<String> msg, Throwable cause) throws IllegalArgumentException {
+        logger.severe(msg);
+        throw new IllegalArgumentException(cause);
+    }
 }
