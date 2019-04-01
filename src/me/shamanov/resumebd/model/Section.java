@@ -1,8 +1,6 @@
 package me.shamanov.resumebd.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
@@ -15,13 +13,15 @@ import java.util.function.Predicate;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Section<T> implements Serializable {
+@XmlSeeAlso({TextSection.class, EstablishmentSection.class})
+public abstract class Section<T> implements Serializable {
 
-    @XmlElement(type = String.class)
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item", type = String.class)
     private List<T> values;
 
-    public Section() {
-        //used by JAXB
+    private Section() {
+
     }
 
     Section(T... values) {
@@ -57,7 +57,7 @@ public class Section<T> implements Serializable {
     }
 
     public List<T> getValues() {
-        return Collections.unmodifiableList(values);
+        return values;
     }
 
     @Override
@@ -78,5 +78,10 @@ public class Section<T> implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(values);
+    }
+
+    @Override
+    final public void finalize() {
+        //empty
     }
 }

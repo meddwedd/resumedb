@@ -10,11 +10,23 @@ import java.util.List;
 public class TextSection extends Section<String> {
     private static long serialVersionUID = 1L;
 
-    public TextSection(String... values) {
+    private TextSection() {
+        super();
+    }
+
+    private TextSection(String... values) {
         super(values);
     }
 
-    public TextSection(List<String> values) {
+    private TextSection(List<String> values) {
         super(values);
+    }
+
+    public static TextSection from(String... values) {
+        return new TextSection(values);
+    }
+
+    public static TextSection from(List<String> values) {
+        return new TextSection(values);
     }
 }
