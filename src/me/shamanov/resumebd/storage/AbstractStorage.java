@@ -79,7 +79,7 @@ public abstract class AbstractStorage<T> implements Storage {
     }
 
     protected void error(Supplier<String> msg, Throwable cause) throws IllegalArgumentException {
-        logger.severe(msg);
+        logger.info(msg);
         throw new IllegalArgumentException(cause);
     }
 }

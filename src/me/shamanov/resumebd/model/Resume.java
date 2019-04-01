@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Author: Mike
@@ -41,13 +38,25 @@ public final class Resume implements Comparable<Resume>, Serializable {
     }
 
     /**
-     * Creates a new instance of a {@code Resume} where all the fields must be specified.
-     * Although you have to manually add contacts and sections after an instance will be created.
+     * Creates a new instance of a {@code Resume} where full name, location and homepage must be specified.
+     * Contacts and sections have to be manually added by related methods after an instance will be created.
      *
      * @return {@code Resume} with full name, location and homepage specified.
      */
     public static Resume of(String fullName, String location, String homepage) {
         return new Resume(fullName, location, homepage);
+    }
+
+    /**
+     * Creates a new instance of a {@code Resume} where all the fields must be specified.
+     *
+     * @return {@code Resume} with full name, location and homepage specified.
+     */
+    public static Resume of(String fullName, String location, String homepage, Map<ContactType, String> contacts, Map<SectionType, Section> sections) {
+        Resume resume = new Resume(fullName, location, homepage);
+        resume.contacts.putAll(contacts);
+        resume.sections.putAll(sections);
+        return resume;
     }
 
     /**
@@ -128,7 +137,7 @@ public final class Resume implements Comparable<Resume>, Serializable {
      * @return {@code Map} which represents the groups of {@code ContactType} and {@code String} of a person.
      */
     public Map<ContactType, String> getContacts() {
-        return new EnumMap<>(contacts);
+        return Collections.unmodifiableMap(contacts);
     }
 
     /**
@@ -136,7 +145,7 @@ public final class Resume implements Comparable<Resume>, Serializable {
      * @return {@code Map} which represents the groups of {@code SectionType} and {@code Section} of a person.
      */
     public Map<SectionType, Section> getSections() {
-        return new EnumMap<>(sections);
+        return Collections.unmodifiableMap(sections);
     }
 
     /**
@@ -195,5 +204,17 @@ public final class Resume implements Comparable<Resume>, Serializable {
     public int compareTo(Resume o) {
         int result = fullName.compareTo(o.fullName);
         return result == 0 ? id.compareTo(o.id) : result;
+    }
+
+    @Override
+    public String toString() {
+        return "Resume{" +
+                "id='" + id + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", location='" + location + '\'' +
+                ", homepage='" + homepage + '\'' +
+                ", contacts=" + contacts +
+                ", sections=" + sections +
+                '}';
     }
 }

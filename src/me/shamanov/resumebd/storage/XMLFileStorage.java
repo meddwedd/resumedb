@@ -1,18 +1,12 @@
 package me.shamanov.resumebd.storage;
 
-import me.shamanov.resumebd.model.ContactType;
-import me.shamanov.resumebd.model.Resume;
-import me.shamanov.resumebd.model.Section;
-import me.shamanov.resumebd.model.SectionType;
+import me.shamanov.resumebd.model.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -38,7 +32,7 @@ public class XMLFileStorage extends AbstractFileStorage {
 
         static {
             try {
-                context = JAXBContext.newInstance(XMLResume.class);
+                context = JAXBContext.newInstance(XMLResume.class, TextSection.class);
                 marshaller = context.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
                 marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
@@ -69,11 +63,17 @@ public class XMLFileStorage extends AbstractFileStorage {
     @XmlAccessorType(XmlAccessType.FIELD)
     private static class XMLResume {
         @XmlID
+        @XmlElement(required = true)
         private String id;
+        @XmlElement
         private String fullName;
+        @XmlElement
         private String location;
+        @XmlElement
         private String homepage;
+        @XmlElement
         private Map<ContactType, String> contacts;
+        @XmlElement
         private Map<SectionType, Section> sections;
 
         XMLResume() {
