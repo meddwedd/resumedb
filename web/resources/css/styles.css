@@ -1,0 +1,58 @@
+body {
+    background: #939599;
+    align-items: center;
+    display: flex;
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+    height: 100vh;
+    justify-content: center;
+}
+
+table {
+    border-collapse: collapse;
+    border: 2px solid rgb(200, 200, 200);
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: .8rem;
+}
+
+thead th {
+    padding: 10px;
+    background-color: #696969;
+    text-align: left;
+    color: #fff;
+}
+
+td {
+    border: 1px solid rgb(190, 190, 190);
+    padding: 10px;
+}
+
+td {
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #eee;
+}
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+    font-size: .6rem;
+}
+
+a:link, a:visited {
+    color: black;
+    font-weight: bold;
+    transition: background-color .2s;
+    text-decoration: none;
+}
+
+a:hover {
+    background-color: gray;
+}
+
+a#resume-title {
+    font-weight: normal;
+}

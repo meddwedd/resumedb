@@ -1,0 +1,71 @@
+body {
+    background: #939599;
+    align-items: center;
+    display: block;
+    color: #222727;
+    height: 100vh;
+
+    /*justify-content: center;*/
+}
+
+#resume-name {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#resume-main-table {
+    background-color: #eee;
+    width: 50%;
+    padding: 5px;
+    margin: 0px auto;
+    border: 1px solid cadetblue;
+    font-family: sans-serif;
+    font-size: .8rem;
+}
+
+thead th, td {
+    padding: 3px;
+    text-align: left;
+    font-weight: normal;
+    border-bottom: solid 2px;
+    border-left: solid 7px;
+    border-color: #597199;
+}
+
+.resume-section-name {
+    padding: 10px;
+    background-color: #597199;
+    font: 1.2em 'Arial', sans-serif;
+    color: white;
+    font-variant: all-small-caps;
+    text-align: left;
+    border: none;
+}
+
+.item {
+    font-weight: bold;
+}
+
+.list {
+    position: relative;
+    margin-left: 20px;
+    display: list-item;
+    list-style-type: disc;
+}
+
+a:link, a:visited {
+    color: black;
+    font-weight: bold;
+    transition: background-color .2s;
+    text-decoration: none;
+}
+
+a:hover {
+    background-color: gray;
+}
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+    font-size: .6rem;
+}
