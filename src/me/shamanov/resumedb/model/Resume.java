@@ -1,5 +1,7 @@
 package me.shamanov.resumedb.model;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -7,14 +9,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Author: Mike
  * Date: 30.03.2019
  * <p>
  * This class represents a resume with different fields and sections to form a description of professional skills, experience
- * and education of a concrete person. Each resume has its on unique id (randomly assigned on instantiation) to be saved within a storage representative
+ * and education of a concrete person. Each resume has its unique id (randomly assigned on instantiation) to be saved within a storage representative
  * e.g. database, filesystem etc.
  */
 
@@ -23,57 +29,71 @@ import java.util.*;
 public final class Resume implements Comparable<Resume>, Serializable {
     private static final long serialVersionUID = 1L;
 
+    public static final transient Resume EMPTY = new Resume();
+
+    static {
+        //filling EMPTY instance with empty contact values.
+        for (ContactType contactType : ContactType.values()) {
+            EMPTY.getContacts().put(contactType, "");
+        }
+
+        //filling EMPTY instance with empty section values.
+        for (SectionType sectionType : SectionType.values()) {
+            EMPTY.getSections().compute(sectionType, (k, v) -> {
+                if (k == SectionType.EDUCATION || k == SectionType.EXPERIENCE) {
+                    return EstablishmentHolder.from(Establishment.of("", Establishment.Period.of(LocalDate.now(), LocalDate.now(), "")));
+                } else {
+                    return MultipleTextHolder.from();
+                }
+            });
+        }
+    }
+
     private String id;
     private String fullName;
     private String location;
-    private String homepage;
+    private int age;
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
-    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
+    private final Map<SectionType, Holder> sections = new EnumMap<>(SectionType.class);
 
-    private Resume() { }
+    private Resume() {
+    }
 
-    private Resume(String fullName, String location, String homepage) {
-        Objects.requireNonNull(fullName, "Full name must not be empty!");
-        Objects.requireNonNull(location, "Location must not be empty!");
-        Objects.requireNonNull(homepage, "Homepage must not be empty!");
-
+    private Resume(String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
+        String fn = fullName.trim();
+        fullName = fn.isEmpty() ? null : fn;
+        Objects.requireNonNull(fullName, "Full name must not be null or empty!");
+        Objects.requireNonNull(location, "Location must not be null!");
+        if (age < 0 || age > 300) {
+            throw new IllegalArgumentException("Age must not be less than 0 or higher than 300!");
+        }
         this.id = generateRandomId();
         this.fullName = fullName;
         this.location = location;
-        this.homepage = homepage;
+        this.age = age;
+        if (contacts != null && sections != null) {
+            this.contacts.putAll(contacts);
+            this.sections.putAll(sections);
+        }
     }
 
     /**
-     * Creates a new instance of a {@code Resume} where full name, location and homepage must be specified.
+     * Creates a new instance of a {@code Resume} where full name, location and age must be specified.
      * Contacts and sections have to be manually added by related methods after an instance will be created.
      *
-     * @return {@code Resume} with full name, location and homepage specified.
+     * @return {@code Resume} with full name, location and age specified.
      */
-    public static Resume of(String fullName, String location, String homepage) {
-        return new Resume(fullName, location, homepage);
+    public static Resume of(String fullName, String location, int age) {
+        return of(fullName, location, age, null, null);
     }
 
     /**
      * Creates a new instance of a {@code Resume} where all the fields must be specified.
      *
-     * @return {@code Resume} with full name, location and homepage specified.
+     * @return {@code Resume} with full name, location and age specified.
      */
-    public static Resume of(String fullName, String location, String homepage, Map<ContactType, String> contacts, Map<SectionType, Section> sections) {
-        Resume resume = new Resume(fullName, location, homepage);
-        resume.contacts.putAll(contacts);
-        resume.sections.putAll(sections);
-        return resume;
-    }
-
-    /**
-     * Creates a new instance of a {@code Resume} where only a full name of a person should be specified,
-     * other {@code String} fields like location and homepage are being replaced with empty values by quoting:
-     * <p><code>String example = "";</code></p>
-     *
-     * @return a new instance of {@code Resume} with specified full name of a person, other fields remain empty.
-     */
-    public static Resume of(String fullName) {
-        return new Resume(fullName, "", "");
+    public static Resume of(String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
+        return new Resume(fullName, location, age, contacts, sections);
     }
 
     /**
@@ -96,10 +116,9 @@ public final class Resume implements Comparable<Resume>, Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
-        return Objects.equals(id, resume.id) &&
+        return Objects.equals(id, resume.id) && age == resume.age &&
                 Objects.equals(fullName, resume.fullName) &&
                 Objects.equals(location, resume.location) &&
-                Objects.equals(homepage, resume.homepage) &&
                 Objects.equals(contacts, resume.contacts) &&
                 Objects.equals(sections, resume.sections);
     }
@@ -134,10 +153,10 @@ public final class Resume implements Comparable<Resume>, Serializable {
     }
 
     /**
-     * @return homepage link for this concrete {@code Resume} instance.
+     * @return age of a person.
      */
-    public String getHomepage() {
-        return homepage;
+    public int getAge() {
+        return age;
     }
 
     /**
@@ -146,16 +165,16 @@ public final class Resume implements Comparable<Resume>, Serializable {
      * @return {@code Map} which represents the groups of {@code ContactType} and {@code String} of a person.
      */
     public Map<ContactType, String> getContacts() {
-        return Collections.unmodifiableMap(contacts);
+        return contacts;
     }
 
     /**
      * Returns a <b>copy</b> of sections that are represented by {@link EnumMap}
      *
-     * @return {@code Map} which represents the groups of {@code SectionType} and {@code Section} of a person.
+     * @return {@code Map} which represents the groups of {@code SectionType} and {@code Holder} of a person.
      */
-    public Map<SectionType, Section> getSections() {
-        return Collections.unmodifiableMap(sections);
+    public Map<SectionType, Holder> getSections() {
+        return sections;
     }
 
     /**
@@ -173,10 +192,10 @@ public final class Resume implements Comparable<Resume>, Serializable {
     }
 
     /**
-     * @param homepage link to a person's homepage specified for this concrete {@code Resume} instance.
+     * @param age person's age specified for this concrete {@code Resume} instance.
      */
-    public void setHomepage(String homepage) {
-        this.homepage = homepage;
+    public void setAge(int age) {
+        this.age = age;
     }
 
     /**
@@ -189,12 +208,12 @@ public final class Resume implements Comparable<Resume>, Serializable {
     }
 
     /**
-     * @param sectionType type of a section to be added, go to {@link SectionType} to see a list of available types.
-     * @param section     a concrete representation of {@code Section} for this type.
-     * @return a previous {@code Section} value for specified sectionType.
+     * @param sectionType type of a holder to be added, go to {@link SectionType} to see a list of available types.
+     * @param holder      a concrete representation of {@code Holder} for this type.
+     * @return a previous {@code Holder} value for specified sectionType.
      */
-    public Section addSection(SectionType sectionType, Section section) {
-        return sections.put(sectionType, section);
+    public Holder addSection(SectionType sectionType, Holder holder) {
+        return sections.put(sectionType, holder);
     }
 
     private void writeObject(ObjectOutputStream os) throws IOException {
@@ -209,7 +228,7 @@ public final class Resume implements Comparable<Resume>, Serializable {
      * Compares two Resume objects by person's full name of each, and if they equal it compares their unique IDs.
      *
      * @param o the reference object with which to compare.
-     * @return 0 if fullName.compareTo(o.fullName) returns 0, -1 or 1 if id.compareTo(o.id) returns any (in theory, it may return 0 as well).
+     * @return 0 if fullName.compareTo(o.fullName) returns 0, -1 or 1 if id.compareTo(o.id) returns any (in quite a mysterious theory, it may return 0 as well).
      */
     @Override
     public int compareTo(Resume o) {
@@ -223,7 +242,7 @@ public final class Resume implements Comparable<Resume>, Serializable {
                 "id='" + id + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", location='" + location + '\'' +
-                ", homepage='" + homepage + '\'' +
+                ", age='" + age + '\'' +
                 ", contacts=" + contacts +
                 ", sections=" + sections +
                 '}';

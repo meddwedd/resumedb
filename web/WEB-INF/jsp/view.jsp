@@ -1,11 +1,13 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="me.shamanov.resumedb.model.Establishment.Period" %>
 <%@ page import="me.shamanov.resumedb.model.SectionType" %>
-<%@ page import="java.time.LocalDate" %>
-<%@ page import="me.shamanov.resumedb.model.Resume" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%--<%@ page errorPage="error.jsp" %>--%>
 
 <html lang="ru">
 <head>
+    <jsp:useBean id="resume" scope="request" type="me.shamanov.resumedb.model.Resume"/>
     <link rel="stylesheet" type="text/css" href="resources/css/view-styles.css"/>
     <title>${resume.fullName}</title>
 </head>
@@ -19,15 +21,19 @@
     <tr>
         <th class="main-table-item"><span id="resume-name">${resume.fullName}</span></th>
     </tr>
-    <tr>
-        <th class="main-table-item"><span class="item">Место проживания: </span>${resume.location}</th>
-    </tr>
-    <tr>
-        <th class="main-table-item"><span class="item">Домашняя страница: </span>${resume.homepage}</th>
-    </tr>
+    <c:if test="${!resume.location.isEmpty()}">
+        <tr>
+            <th class="main-table-item"><span class="item">Место проживания: </span>${resume.location}</th>
+        </tr>
+    </c:if>
+    <c:if test="${resume.age > 0 and resume.age <= 300}">
+        <tr>
+            <th class="main-table-item"><span class="item">Возраст: </span>${resume.age}</th>
+        </tr>
+    </c:if>
     </thead>
     <tbody>
-    <c:if test="${not empty resume.contacts.values}">
+    <c:if test="${resume.contacts.values.size() > 0}">
         <tr>
             <td class="main-table-section-name">Контакты:</td>
         </tr>
@@ -36,90 +42,115 @@
                          type="java.util.Map.Entry<me.shamanov.resumedb.model.ContactType, java.lang.String>"/>
             <c:set var="contactType" value="${contactEntry.key}"/>
             <c:set var="value" value="${contactEntry.value}"/>
-            <tr>
-                <td class="main-table-item"><span class="item">${contactType.title}: </span>${value}</td>
-            </tr>
+            <c:if test="${not empty value}">
+                <tr>
+                    <td class="main-table-item"><span
+                            class="item">${contactType.title}: </span>${contactType.toLink(value)}
+                    </td>
+                </tr>
+            </c:if>
         </c:forEach>
     </c:if>
     <c:if test="${resume.sections.values.size ne 0}">
         <c:forEach var="sectionEntry" items="${resume.sections}">
             <jsp:useBean id="sectionEntry"
-                         type="java.util.Map.Entry<me.shamanov.resumedb.model.SectionType, me.shamanov.resumedb.model.Section>"/>
+                         type="java.util.Map.Entry<me.shamanov.resumedb.model.SectionType, me.shamanov.resumedb.model.Holder>"/>
             <c:set var="sectionType" value="${sectionEntry.key}"/>
-            <c:set var="section" value="${sectionEntry.value}"/>
-            <tr>
-                <td class="main-table-section-name">${sectionType.title}</td>
-            </tr>
-            <c:choose>
-                <c:when test="${sectionType ne SectionType.EDUCATION and sectionType ne SectionType.EXPERIENCE}">
-                    <tr>
-                        <td class="main-table-item">
-                            <c:choose>
-                                <c:when test="${sectionType eq SectionType.POSITION}">
-                                    <span class="item">${section.values.get(0)}</span>
-                                    <c:if test="${section.values.size() > 1}">
-                                        <c:forEach var="sectionItem" items="${section.values}" begin="1">
-                                            <div class="list">${sectionItem}</div>
-                                        </c:forEach>
-                                    </c:if>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:forEach var="sectionItem" items="${section.values}">
-                                        <div class="list">${sectionItem}</div>
-                                    </c:forEach>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                    </tr>
-                </c:when>
-                <c:otherwise>
-                    <c:forEach var="establishment" items="${section.values}">
-                        <jsp:useBean id="establishment" type="me.shamanov.resumedb.model.Establishment"/>
+            <c:set var="holder" value="${sectionEntry.value}"/>
+            <c:if test="${not empty holder}">
+                <tr>
+                    <td class="main-table-section-name">${sectionType.title}</td>
+                </tr>
+                <c:choose>
+                    <c:when test="${sectionType ne SectionType.EDUCATION and sectionType ne SectionType.EXPERIENCE}">
                         <tr>
                             <td class="main-table-item">
-                                <table id="resume-sub-table">
-                                    <thead>
-                                    <tr>
-                                        <th class="sub-table-item">
-                                            <span class="item">${establishment.title}</span>
-                                        </th>
-                                        <th class="sub-table-item">
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <c:forEach var="period" items="${establishment.periods}">
-                                        <jsp:useBean id="period"
-                                                     type="me.shamanov.resumedb.model.Establishment.Period"/>
+                                <c:choose>
+                                    <c:when test="${sectionType eq SectionType.POSITION}">
+                                        <span class="item"><c:out value="${holder.values.get(0)}"/></span>
+                                        <c:if test="${holder.values.size() > 1}">
+                                            <ul class="main-list">
+                                                <c:forEach var="sectionItem" items="${holder.values}" begin="1">
+                                                    <li>${sectionItem}</li>
+                                                </c:forEach>
+                                            </ul>
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <ul class="main-list">
+                                            <c:forEach var="sectionItem" items="${holder.values}">
+                                                <li>${sectionItem}</li>
+                                            </c:forEach>
+                                        </ul>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="establishment" items="${holder.values}">
+                            <jsp:useBean id="establishment" type="me.shamanov.resumedb.model.Establishment"/>
+                            <tr>
+                                <td class="main-table-item">
+                                    <table id="resume-sub-table">
+                                        <thead>
                                         <tr>
-                                            <td class="sub-table-item">
-                                                <span class="item">${period.start} - ${period.end eq LocalDate.MAX ? 'наст. время' : period.end}</span>
-                                            </td>
-                                            <td class="sub-table-item">
-                                                <span class="item">${period.position}</span>
-                                            </td>
+                                            <th class="sub-table-item">
+                                                <span class="item">${establishment.title}</span>
+                                            </th>
+                                            <th class="sub-table-item">
+                                            </th>
                                         </tr>
-                                        <c:forEach var="description" items="${period.description}">
-                                            <c:if test="${not empty description}">
+                                        </thead>
+                                        <tbody>
+                                        <c:forEach var="period" items="${establishment.periods}">
+                                            <jsp:useBean id="period"
+                                                         type="me.shamanov.resumedb.model.Establishment.Period"/>
+                                            <tr>
+                                                <td class="sub-table-item">
+                                                    <c:set var="formatter" value="<%=Period.dateTimeFormatter%>"/>
+                                                    <c:set var="NOW" value="<%=Period.NOW%>"/>
+                                                    <span class="item">${period.start eq NOW ? '' : period.start.format(formatter)} — ${period.end eq NOW ? (period.start ne NOW ? 'наст. время' : '') : period.end.format(formatter)}</span>
+                                                </td>
+                                                <td class="sub-table-item">
+                                                    <span class="item">${period.position}</span>
+                                                </td>
+                                            </tr>
+                                            <c:if test="${not empty period.descriptions}">
                                                 <tr>
                                                     <td class="sub-table-item">
                                                         &nbsp;
                                                     </td>
                                                     <td class="sub-table-item">
-                                                        <div class="list">${description}</div>
+                                                        <ul class="main-list">
+                                                            <c:forEach var="description" items="${period.descriptions}">
+                                                                <li>${description}</li>
+                                                            </c:forEach>
+                                                        </ul>
                                                     </td>
                                                 </tr>
                                             </c:if>
                                         </c:forEach>
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
-                        </tr>
-                    </c:forEach>
-                </c:otherwise>
-            </c:choose>
+                                        </tbody>
+                                    </table>
+                            </tr>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </c:if>
         </c:forEach>
     </c:if>
+    <tr>
+        <td class="main-table-section-name" style="text-align: center;">
+            <form action="resume">
+                <input type="hidden" name="id" value="${resume.id}"/>
+                <input type="hidden" name="action" value="edit"/>
+                <input type="submit" name="submit" value="редактировать"/>
+                <input type="button" name="db" value="список" onclick="window.location='/resumedb';"/>
+                <%--<input type="button" name="back" value="назад" onclick="window.history.back()"/>--%>
+            </form>
+        </td>
+    </tr>
     </tbody>
 </table>
 </body>

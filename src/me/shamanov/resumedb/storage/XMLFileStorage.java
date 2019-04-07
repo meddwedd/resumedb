@@ -1,8 +1,8 @@
 package me.shamanov.resumedb.storage;
 
 import me.shamanov.resumedb.model.Establishment;
+import me.shamanov.resumedb.model.Holder;
 import me.shamanov.resumedb.model.Resume;
-import me.shamanov.resumedb.model.Section;
 import me.shamanov.resumedb.utils.XMLUtil;
 
 import javax.xml.bind.JAXBException;
@@ -15,7 +15,7 @@ import java.nio.file.Path;
  */
 
 public class XMLFileStorage extends AbstractFileStorage {
-    private XMLUtil xmlUtil = new XMLUtil(Resume.class, Section.class, Establishment.class);
+    private XMLUtil xmlUtil = new XMLUtil(Resume.class, Holder.class, Establishment.class);
 
     public XMLFileStorage(Path dir) {
         super(dir);

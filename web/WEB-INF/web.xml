@@ -15,6 +15,11 @@
         <param-value>Resume Database</param-value>
     </context-param>
 
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+
     <!--<servlet>-->
         <!--<servlet-name>resumeServlet</servlet-name>-->
         <!--<servlet-class>me.shamanov.resumedb.web.ResumeServlet</servlet-class>-->

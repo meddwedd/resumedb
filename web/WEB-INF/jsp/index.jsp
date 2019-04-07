@@ -1,5 +1,7 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%--<%@ page errorPage="error.jsp" %>--%>
 
 <html lang="ru">
 <head>
@@ -11,7 +13,8 @@
     <caption>coded by mshamanov</caption>
     <thead>
         <tr>
-            <th colspan="3"><span>Список резюме:</span></th>
+            <th colspan="2"><span>Список резюме:</span></th>
+            <th><a href="resume?action=create"><span>добавить</span></a></th>
         </tr>
     </thead>
     <tbody>

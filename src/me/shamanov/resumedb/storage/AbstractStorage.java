@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractStorage<T> implements Storage {
 
-    protected Logger logger = Logger.getLogger(this.getClass().getName());
+    Logger logger = Logger.getLogger(this.getClass().getName());
 
     protected abstract T searchKey(String id);
 
@@ -78,8 +78,8 @@ public abstract class AbstractStorage<T> implements Storage {
         doDelete(key);
     }
 
-    protected void error(Supplier<String> msg, Throwable cause) throws IllegalArgumentException {
+    void error(Supplier<String> msg, Throwable cause) throws IllegalArgumentException {
         logger.info(msg);
-        throw new IllegalArgumentException(cause);
+        throw new IllegalArgumentException(msg.get(), cause);
     }
 }
