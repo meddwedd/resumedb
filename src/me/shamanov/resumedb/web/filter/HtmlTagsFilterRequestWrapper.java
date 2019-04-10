@@ -35,6 +35,6 @@ public class HtmlTagsFilterRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String removeTagsFromString(String str) {
-        return str.trim().replaceAll("pattern", "");
+        return str.trim().replaceAll(pattern, "");
     }
 }
