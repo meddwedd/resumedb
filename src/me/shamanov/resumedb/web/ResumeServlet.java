@@ -2,7 +2,7 @@ package me.shamanov.resumedb.web;
 
 import me.shamanov.resumedb.model.*;
 import me.shamanov.resumedb.storage.Storage;
-import me.shamanov.resumedb.storage.XMLFileStorage;
+import me.shamanov.resumedb.web.config.ResumeServletConfig;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -96,8 +96,8 @@ public class ResumeServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
 
         String id = req.getParameter("id");
-        String fullName = req.getParameter("fullName").trim();
-        String location = req.getParameter("location").trim();
+        String fullName = req.getParameter("fullName");
+        String location = req.getParameter("location");
         int age = 0;
 
         try {
@@ -149,14 +149,14 @@ public class ResumeServlet extends HttpServlet {
                     List<Establishment> establishments = new LinkedList<>();
                     for (int i = 0; i < reqSection.length; i++) {
                         String establishmentTitle = reqSection[i];
-                        if (!establishmentTitle.trim().isEmpty()) {
+                        if (!establishmentTitle.isEmpty()) {
                             String[] positions = req.getParameterValues(sectionType + "-position-" + i);
                             String[] descriptions = req.getParameterValues(sectionType + "-description-" + i);
                             String[] startDates = req.getParameterValues(sectionType + "-start-" + i);
                             String[] endDates = req.getParameterValues(sectionType + "-end-" + i);
                             List<Establishment.Period> periods = new LinkedList<>();
                             for (int j = 0; j < positions.length; j++) {
-                                if (!positions[j].trim().isEmpty()) {
+                                if (!positions[j].isEmpty()) {
                                     String[] positionDescription = descriptions[j].split("(\r\n|\n)+");
                                     if (positionDescription.length > 0 && positionDescription[0].equals(""))
                                         positionDescription = null;
@@ -188,6 +188,6 @@ public class ResumeServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        storage = new XMLFileStorage("D:\\Java\\projects\\resumedb\\filestorage\\xml");
+        storage = ResumeServletConfig.getStorage();
     }
 }

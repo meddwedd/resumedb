@@ -19,21 +19,21 @@
         <th class="main-table-section-name"></th>
     </tr>
     <tr>
-        <th class="main-table-item"><span id="resume-name">${resume.fullName}</span></th>
+        <th class="main-table-item"><span id="resume-name"><c:out value="${resume.fullName}"/></span></th>
     </tr>
-    <c:if test="${!resume.location.isEmpty()}">
+    <c:if test="${not empty resume.location}">
         <tr>
-            <th class="main-table-item"><span class="item">Место проживания: </span>${resume.location}</th>
+            <th class="main-table-item"><span class="item">Место проживания: </span><c:out value="${resume.location}"/></th>
         </tr>
     </c:if>
     <c:if test="${resume.age > 0 and resume.age <= 300}">
         <tr>
-            <th class="main-table-item"><span class="item">Возраст: </span>${resume.age}</th>
+            <th class="main-table-item"><span class="item">Возраст: </span><c:out value="${resume.age}"/></th>
         </tr>
     </c:if>
     </thead>
     <tbody>
-    <c:if test="${resume.contacts.values.size() > 0}">
+    <c:if test="${resume.contacts.values().size() > 0}">
         <tr>
             <td class="main-table-section-name">Контакты:</td>
         </tr>
@@ -67,11 +67,11 @@
                             <td class="main-table-item">
                                 <c:choose>
                                     <c:when test="${sectionType eq SectionType.POSITION}">
-                                        <span class="item"><c:out value="${holder.values.get(0)}"/></span>
+                                        <span class="item"><c:out value="${holder.values[0]}"/></span>
                                         <c:if test="${holder.values.size() > 1}">
                                             <ul class="main-list">
                                                 <c:forEach var="sectionItem" items="${holder.values}" begin="1">
-                                                    <li>${sectionItem}</li>
+                                                    <li><c:out value="${sectionItem}"/></li>
                                                 </c:forEach>
                                             </ul>
                                         </c:if>
@@ -79,7 +79,7 @@
                                     <c:otherwise>
                                         <ul class="main-list">
                                             <c:forEach var="sectionItem" items="${holder.values}">
-                                                <li>${sectionItem}</li>
+                                                <li><c:out value="${sectionItem}"/></li>
                                             </c:forEach>
                                         </ul>
                                     </c:otherwise>
@@ -96,7 +96,7 @@
                                         <thead>
                                         <tr>
                                             <th class="sub-table-item">
-                                                <span class="item">${establishment.title}</span>
+                                                <span class="item"><c:out value="${establishment.title}"/></span>
                                             </th>
                                             <th class="sub-table-item">
                                             </th>
@@ -110,10 +110,10 @@
                                                 <td class="sub-table-item">
                                                     <c:set var="formatter" value="<%=Period.dateTimeFormatter%>"/>
                                                     <c:set var="NOW" value="<%=Period.NOW%>"/>
-                                                    <span class="item">${period.start eq NOW ? '' : period.start.format(formatter)} — ${period.end eq NOW ? (period.start ne NOW ? 'наст. время' : '') : period.end.format(formatter)}</span>
+                                                    <span class="item"><c:out value="${period.start eq NOW ? '' : period.start.format(formatter)}"/> — <c:out value="${period.end eq NOW ? (period.start ne NOW ? 'наст. время' : '') : period.end.format(formatter)}"/></span>
                                                 </td>
                                                 <td class="sub-table-item">
-                                                    <span class="item">${period.position}</span>
+                                                    <span class="item"><c:out value="${period.position}"/></span>
                                                 </td>
                                             </tr>
                                             <c:if test="${not empty period.descriptions}">
@@ -124,7 +124,7 @@
                                                     <td class="sub-table-item">
                                                         <ul class="main-list">
                                                             <c:forEach var="description" items="${period.descriptions}">
-                                                                <li>${description}</li>
+                                                                <li><c:out value="${description}"/></li>
                                                             </c:forEach>
                                                         </ul>
                                                     </td>

@@ -1,7 +1,5 @@
 package me.shamanov.resumedb.model;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,6 +27,7 @@ import java.util.UUID;
 public final class Resume implements Comparable<Resume>, Serializable {
     private static final long serialVersionUID = 1L;
 
+    //used when a new Resume is getting created when a client opens edit.jsp page
     public static final transient Resume EMPTY = new Resume();
 
     static {
@@ -59,7 +58,7 @@ public final class Resume implements Comparable<Resume>, Serializable {
     private Resume() {
     }
 
-    private Resume(String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
+    private Resume(String id, String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
         String fn = fullName.trim();
         fullName = fn.isEmpty() ? null : fn;
         Objects.requireNonNull(fullName, "Full name must not be null or empty!");
@@ -67,14 +66,14 @@ public final class Resume implements Comparable<Resume>, Serializable {
         if (age < 0 || age > 300) {
             throw new IllegalArgumentException("Age must not be less than 0 or higher than 300!");
         }
-        this.id = generateRandomId();
+        this.id = id != null ? id : generateRandomId();
         this.fullName = fullName;
         this.location = location;
         this.age = age;
-        if (contacts != null && sections != null) {
+        if (contacts != null)
             this.contacts.putAll(contacts);
+        if (sections !=null)
             this.sections.putAll(sections);
-        }
     }
 
     /**
@@ -87,13 +86,22 @@ public final class Resume implements Comparable<Resume>, Serializable {
         return of(fullName, location, age, null, null);
     }
 
+    public static Resume of(String id, String fullName, String location, int age) {
+        return of(id, fullName, location, age, null, null);
+    }
+
     /**
      * Creates a new instance of a {@code Resume} where all the fields must be specified.
      *
      * @return {@code Resume} with full name, location and age specified.
      */
     public static Resume of(String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
-        return new Resume(fullName, location, age, contacts, sections);
+        return of(null, fullName, location, age, contacts, sections);
+    }
+
+    public static Resume of(String id, String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
+        //all the manipulations with the parameters must be here
+        return new Resume(id, fullName, location, age, contacts, sections);
     }
 
     /**
@@ -177,6 +185,10 @@ public final class Resume implements Comparable<Resume>, Serializable {
         return sections;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     /**
      * @param fullName first name and last name of a person specified for this concrete {@code Resume} instance.
      */
@@ -201,19 +213,17 @@ public final class Resume implements Comparable<Resume>, Serializable {
     /**
      * @param contactType type of a contact to be added, go to {@link ContactType} to see a list of available types.
      * @param value       a concrete value for this type, e.g. mobile phone: "+7 999 123 44 55".
-     * @return a previous {@code String} value for specified contactType.
      */
-    public String addContact(ContactType contactType, String value) {
-        return contacts.put(contactType, value);
+    public void addContact(ContactType contactType, String value) {
+        contacts.put(contactType, value);
     }
 
     /**
      * @param sectionType type of a holder to be added, go to {@link SectionType} to see a list of available types.
      * @param holder      a concrete representation of {@code Holder} for this type.
-     * @return a previous {@code Holder} value for specified sectionType.
      */
-    public Holder addSection(SectionType sectionType, Holder holder) {
-        return sections.put(sectionType, holder);
+    public void addSection(SectionType sectionType, Holder holder) {
+        sections.put(sectionType, holder);
     }
 
     private void writeObject(ObjectOutputStream os) throws IOException {

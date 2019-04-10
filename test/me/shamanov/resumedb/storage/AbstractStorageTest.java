@@ -112,7 +112,6 @@ public abstract class AbstractStorageTest {
     @Test
     public void testLoad() {
         Resume load = storage.load(resume0.getId());
-        Map<SectionType, Holder> m = load.getSections();
         Assert.assertEquals(resume0, load);
     }
 
