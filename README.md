@@ -1,4 +1,4 @@
-# Resume DataBase Application (Java)
+## Resume DataBase Application (Java)
 
 This project was coded for my practice in using such things as Tomcat, Servlets, JSP, JSTL, JDBC along with SQL.
 
