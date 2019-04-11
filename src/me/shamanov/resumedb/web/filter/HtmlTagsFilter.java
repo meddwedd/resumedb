@@ -7,12 +7,18 @@ import java.io.IOException;
 /**
  * Author: Mike
  * Date: 09.04.2019
- *
+ * <p>
  * Wraps the client's request when he submits information via POST method.
+ *
  * @see HtmlTagsFilterRequestWrapper
  */
 
 public class HtmlTagsFilter implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;

@@ -2,9 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ page isErrorPage="true" %>
-
-<html lang="ru">
+<!DOCTYPE html>
+<html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="resources/css/styles.css"/>
     <title>${pageContext.servletContext.getInitParameter("title")}</title>
 </head>

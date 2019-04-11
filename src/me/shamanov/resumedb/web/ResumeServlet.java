@@ -81,7 +81,7 @@ public class ResumeServlet extends HttpServlet {
                 storage.delete(id);
                 logger.info("Resume#id: " + id + " has been deleted!");
             default:
-                resp.sendRedirect("/resumedb");
+                resp.sendRedirect("/");
                 return;
         }
 

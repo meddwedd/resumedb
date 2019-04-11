@@ -3,9 +3,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%--<%@ page errorPage="error.jsp" %>--%>
-
-<html lang="ru">
+<!DOCTYPE html>
+<html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="resources/css/styles.css"/>
     <title>${pageContext.servletContext.getInitParameter("title")}</title>
 </head>
