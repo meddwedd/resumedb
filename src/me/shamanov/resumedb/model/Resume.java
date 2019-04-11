@@ -72,12 +72,13 @@ public final class Resume implements Comparable<Resume>, Serializable {
         this.age = age;
         if (contacts != null)
             this.contacts.putAll(contacts);
-        if (sections !=null)
+        if (sections != null)
             this.sections.putAll(sections);
     }
 
     /**
      * Creates a new instance of a {@code Resume} where full name, location and age must be specified.
+     * Full name and location cannot be null. Age shouldn't be less than 0 and greater than 300.
      * Contacts and sections have to be manually added by related methods after an instance will be created.
      *
      * @return {@code Resume} with full name, location and age specified.
@@ -86,21 +87,38 @@ public final class Resume implements Comparable<Resume>, Serializable {
         return of(fullName, location, age, null, null);
     }
 
+    /**
+     * Creates a new instance of a {@code Resume} where id, full name, location and age must be specified.
+     * Full name and location cannot be null. If id is null it will be randomly generated.
+     * Age shouldn't be less than 0 and greater than 300.
+     * Contacts and sections have to be manually added by related methods after an instance will be created.
+     *
+     * @return {@code Resume} with id, full name, location and age specified.
+     */
     public static Resume of(String id, String fullName, String location, int age) {
         return of(id, fullName, location, age, null, null);
     }
 
     /**
-     * Creates a new instance of a {@code Resume} where all the fields must be specified.
+     * Creates a new instance of a {@code Resume} where all fields must be specified.
+     * Full name and location cannot be null. Age shouldn't be less than 0 and greater than 300.
+     * Contacts and sections may be null and can be manually added by related methods afterwards.
      *
-     * @return {@code Resume} with full name, location and age specified.
+     * @return {@code Resume} with full name, location, age, contacts and sections specified.
      */
     public static Resume of(String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
         return of(null, fullName, location, age, contacts, sections);
     }
 
+    /**
+     * Creates a new instance of a {@code Resume} where all fields must be specified.
+     * Full name and location cannot be null. If id is null it will be randomly generated.
+     * Age shouldn't be less than 0 and greater than 300.
+     * Contacts and sections may be null and can be manually added by related methods afterwards.
+     *
+     * @return {@code Resume} with full name, location, age, contacts and sections specified.
+     */
     public static Resume of(String id, String fullName, String location, int age, Map<ContactType, String> contacts, Map<SectionType, Holder> sections) {
-        //all the manipulations with the parameters must be here
         return new Resume(id, fullName, location, age, contacts, sections);
     }
 
@@ -132,7 +150,7 @@ public final class Resume implements Comparable<Resume>, Serializable {
     }
 
     /**
-     * @return hashcode upon unique id which is randomly generated on instantiation
+     * @return hashcode upon unique id which is randomly generated on instantiation.
      */
     @Override
     public int hashCode() {
@@ -161,25 +179,25 @@ public final class Resume implements Comparable<Resume>, Serializable {
     }
 
     /**
-     * @return age of a person.
+     * @return age of a person for this concrete {@code Resume} instance.
      */
     public int getAge() {
         return age;
     }
 
     /**
-     * Returns a <b>copy</b> of contacts that are represented by {@link EnumMap}
+     * Returns a map of contacts that is represented by {@link EnumMap}.
      *
-     * @return {@code Map} which represents the groups of {@code ContactType} and {@code String} of a person.
+     * @return {@code Map} which represents groups of {@code ContactType} and {@code String}, each of those is a separate type of person's contact.
      */
     public Map<ContactType, String> getContacts() {
         return contacts;
     }
 
     /**
-     * Returns a <b>copy</b> of sections that are represented by {@link EnumMap}
+     * Returns a map of sections that is represented by {@link EnumMap}.
      *
-     * @return {@code Map} which represents the groups of {@code SectionType} and {@code Holder} of a person.
+     * @return {@code Map} which represents groups of {@code SectionType} and {@code Holder}, each of those is a separate section unit.
      */
     public Map<SectionType, Holder> getSections() {
         return sections;
